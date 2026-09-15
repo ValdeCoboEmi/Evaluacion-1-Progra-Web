@@ -8,7 +8,12 @@ let siguienteId = 1;
 
 // POST /incidencias
 function registrarIncidencia(req, res) {
-  
+  const {empleado, area, descripcion, prioridad} = req.body;
+
+  // Se valida que todos los campos existan
+  if (empleado === undefined || area === undefined || descripcion === undefined || prioridad == undefined) {
+    return res.status(400).json({mensaje: "Todos los campos son obligatorios"});
+  }
 }
 
 // GET /incidencias
