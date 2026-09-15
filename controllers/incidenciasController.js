@@ -24,6 +24,25 @@ function registrarIncidencia(req, res) {
   if (prioridad !== "Alta" && prioridad !== "Media" && prioridad !== "Baja") {
     return res.status(400).json({mensaje: "La prioridad debe ser: Alta, Media o Baja"});
   }
+
+  // Se crea la incidencia
+  const nuevaIncidencia = {
+    id: siguienteId,
+    empleado,
+    area,
+    descripcion,
+    prioridad,
+    estado: "Pendiente"
+  };
+
+  // Se guarda la incidencia en un arreglo
+  incidencias.push(nuevaIncidencia);
+
+  // Se prepara el siguiente ID
+  siguienteId++;
+
+  // Respuesta sobre el estado final
+  res.status(201).json({mensaje: "Incidencia registrada correctamente"});
 }
 
 // GET /incidencias
