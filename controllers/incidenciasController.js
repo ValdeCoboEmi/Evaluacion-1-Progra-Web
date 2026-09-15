@@ -8,7 +8,41 @@ let siguienteId = 1;
 
 // POST /incidencias
 function registrarIncidencia(req, res) {
-  
+  const {empleado, area, descripcion, prioridad} = req.body;
+
+  // Se valida que todos los campos existan
+  if (empleado === undefined || area === undefined || descripcion === undefined || prioridad === undefined) {
+    return res.status(400).json({mensaje: "Todos los campos son obligatorios"});
+  }
+
+  // Se valida que no existan cadenas vacias
+  if (empleado.trim === "" || area.trim === "" || descripcion.trim === "" || prioridad.trim === "") {
+    return res.status(400).json({mensaje: "No se permiten campos vacios"});
+  }
+
+  // Se verifica la prioridad
+  if (prioridad !== "Alta" && prioridad !== "Media" && prioridad !== "Baja") {
+    return res.status(400).json({mensaje: "La prioridad debe ser: Alta, Media o Baja"});
+  }
+
+  // Se crea la incidencia
+  const nuevaIncidencia = {
+    id: siguienteId,
+    empleado,
+    area,
+    descripcion,
+    prioridad,
+    estado: "Pendiente"
+  };
+
+  // Se guarda la incidencia en un arreglo
+  incidencias.push(nuevaIncidencia);
+
+  // Se prepara el siguiente ID
+  siguienteId++;
+
+  // Respuesta sobre el estado final
+  res.status(201).json({mensaje: "Incidencia registrada correctamente"});
 }
 
 // GET /incidencias
