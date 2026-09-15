@@ -14,6 +14,11 @@ function registrarIncidencia(req, res) {
   if (empleado === undefined || area === undefined || descripcion === undefined || prioridad == undefined) {
     return res.status(400).json({mensaje: "Todos los campos son obligatorios"});
   }
+
+  // Se valida que no existan cadenas vacias
+  if (empleado.trim === "" || area.trim === "" || descripcion.trim === "" || prioridad.trim == "") {
+    return res.status(400).json({mensaje: "No se permiten campos vacios"});
+  }
 }
 
 // GET /incidencias
