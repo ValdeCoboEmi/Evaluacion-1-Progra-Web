@@ -96,7 +96,7 @@ const id = Number(req.params.id);
 
   if (!esValido) {
     return res.status(400).json({
-      mensaje: "Estado invalido. Los estados permitidos son: Pendiente, En Proceso, Resuelta, Cancelada",
+      mensaje: "Estado invalido. Los estados permitidos son: Pendiente, En Proceso, Resuelta, Cancelada.",
     });
   }
 
