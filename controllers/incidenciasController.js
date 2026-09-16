@@ -8,30 +8,33 @@ let siguienteId = 1;
 
 // POST /incidencias
 function registrarIncidencia(req, res) {
-  const {empleado, area, descripcion, prioridad} = req.body;
+  const { empleado, area, descripcion, prioridad } = req.body;
 
   // Se valida que todos los campos existan
   if (empleado === undefined || area === undefined || descripcion === undefined || prioridad === undefined) {
-    return res.status(400).json({mensaje: "Todos los campos son obligatorios"});
+    return res.status(400).json({ mensaje: "Todos los campos son obligatorios" });
   }
 
   // Se valida que no existan cadenas vacias
-  if (empleado.trim === "" || area.trim === "" || descripcion.trim === "" || prioridad.trim === "") {
-    return res.status(400).json({mensaje: "No se permiten campos vacios"});
+  if (empleado.trim() === "" || area.trim() === "" || descripcion.trim() === "" || prioridad.trim() === "") {
+    return res.status(400).json({ mensaje: "No se permiten campos vacios" });
   }
 
+  //se normaliza la prioridad antes de validar para aceptar "alta", "Alta", "ALTA", etc
+  const prioridadNormalizada = prioridad.trim().charAt(0).toUpperCase() + prioridad.trim().slice(1).toLowerCase();
+
   // Se verifica la prioridad
-  if (prioridad !== "Alta" && prioridad !== "Media" && prioridad !== "Baja") {
-    return res.status(400).json({mensaje: "La prioridad debe ser: Alta, Media o Baja"});
+  if (prioridadNormalizada !== "Alta" && prioridadNormalizada !== "Media" && prioridadNormalizada !== "Baja") {
+    return res.status(400).json({ mensaje: "La prioridad debe ser: Alta, Media o Baja" });
   }
 
   // Se crea la incidencia
   const nuevaIncidencia = {
     id: siguienteId,
-    empleado,
-    area,
-    descripcion,
-    prioridad,
+    empleado: empleado.trim(),
+    area: area.trim(),
+    descripcion: descripcion.trim(),
+    prioridad: prioridadNormalizada,
     estado: "Pendiente"
   };
 
@@ -42,7 +45,7 @@ function registrarIncidencia(req, res) {
   siguienteId++;
 
   // Respuesta sobre el estado final
-  res.status(201).json({mensaje: "Incidencia registrada correctamente"});
+  res.status(201).json({ mensaje: "Incidencia registrada correctamente" });
 }
 
 // GET /incidencias
@@ -64,7 +67,7 @@ function buscarIncidenciaPorId(req, res) {
 
 // PUT /incidencias/:id/estado
 function cambiarEstadoIncidencia(req, res) {
-const id = Number(req.params.id);
+  const id = Number(req.params.id);
   const incidencia = incidencias.find((inc) => inc.id === id);
 
   // Si no existe, 404 antes de validar el body
@@ -81,7 +84,7 @@ const id = Number(req.params.id);
 
   const estadoNormalizado = estado.trim();
 
-  //Switch para validar el estado recibido
+  // Switch para validar el estado recibido
   let esValido;
   switch (estadoNormalizado) {
     case "Pendiente":
@@ -110,7 +113,7 @@ const id = Number(req.params.id);
 
 // DELETE /incidencias/:id
 function eliminarIncidencia(req, res) {
-const id = Number(req.params.id);
+  const id = Number(req.params.id);
 
   // findIndex y splice para eliminar del arreglo
   const indice = incidencias.findIndex((inc) => inc.id === id);
@@ -125,17 +128,6 @@ const id = Number(req.params.id);
     mensaje: "Incidencia eliminada correctamente",
     incidencia: incidenciaEliminada,
   });
-}
-
-// GET /estadisticas
-function obtenerEstadisticas(req, res) {
-  const totalIncidencias = incidencias.length;
-  const pendientes = incidencias.filter((inc) => inc.estado === "Pendiente").length;
-  const enProceso = incidencias.filter((inc) => inc.estado === "En Proceso").length;
-  const resueltas = incidencias.filter((inc) => inc.estado === "Resuelta").length;
-  const canceladas = incidencias.filter((inc) => inc.estado === "Cancelada").length;
-
-  res.json({ totalIncidencias, pendientes, enProceso, resueltas, canceladas });
 }
 
 // GET /estadisticas
