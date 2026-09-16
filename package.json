@@ -1,6 +1,6 @@
 {
   "name": "incidencias-api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "API REST para gestionar incidencias de soporte tecnico - TechSupport S.A. (Evaluacion I, Programacion Web UCA)",
   "main": "app.js",
   "scripts": {
