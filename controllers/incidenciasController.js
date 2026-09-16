@@ -47,12 +47,19 @@ function registrarIncidencia(req, res) {
 
 // GET /incidencias
 function listarIncidencias(req, res) {
-
+  res.json(incidencias);
 }
 
 // GET /incidencias/:id
 function buscarIncidenciaPorId(req, res) {
+  const id = Number(req.params.id);
+  const incidencia = incidencias.find((inc) => inc.id === id);
 
+  if (!incidencia) {
+    return res.status(404).json({ mensaje: "Incidencia no encontrada" });
+  }
+
+  res.json(incidencia);
 }
 
 // PUT /incidencias/:id/estado
