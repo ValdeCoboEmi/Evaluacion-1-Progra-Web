@@ -64,12 +64,78 @@ function buscarIncidenciaPorId(req, res) {
 
 // PUT /incidencias/:id/estado
 function cambiarEstadoIncidencia(req, res) {
+const id = Number(req.params.id);
+  const incidencia = incidencias.find((inc) => inc.id === id);
 
+  // Si no existe, 404 antes de validar el body
+  if (!incidencia) {
+    return res.status(404).json({ mensaje: "Incidencia no encontrada" });
+  }
+
+  const { estado } = req.body;
+
+  // Validar que el campo sea texto y no sea una cadena vacia
+  if (typeof estado !== "string" || estado.trim() === "") {
+    return res.status(400).json({ mensaje: "El campo estado es obligatorio" });
+  }
+
+  const estadoNormalizado = estado.trim();
+
+  //Switch para validar el estado recibido
+  let esValido;
+  switch (estadoNormalizado) {
+    case "Pendiente":
+    case "En Proceso":
+    case "Resuelta":
+    case "Cancelada":
+      esValido = true;
+      break;
+    default:
+      esValido = false;
+  }
+
+  if (!esValido) {
+    return res.status(400).json({
+      mensaje: "Estado invalido. Los estados permitidos son: Pendiente, En Proceso, Resuelta, Cancelada",
+    });
+  }
+
+  incidencia.estado = estadoNormalizado;
+
+  res.json({
+    mensaje: "Estado actualizado correctamente",
+    incidencia,
+  });
 }
 
 // DELETE /incidencias/:id
 function eliminarIncidencia(req, res) {
+const id = Number(req.params.id);
 
+  // findIndex y splice para eliminar del arreglo
+  const indice = incidencias.findIndex((inc) => inc.id === id);
+
+  if (indice === -1) {
+    return res.status(404).json({ mensaje: "Incidencia no encontrada" });
+  }
+
+  const [incidenciaEliminada] = incidencias.splice(indice, 1);
+
+  res.json({
+    mensaje: "Incidencia eliminada correctamente",
+    incidencia: incidenciaEliminada,
+  });
+}
+
+// GET /estadisticas
+function obtenerEstadisticas(req, res) {
+  const totalIncidencias = incidencias.length;
+  const pendientes = incidencias.filter((inc) => inc.estado === "Pendiente").length;
+  const enProceso = incidencias.filter((inc) => inc.estado === "En Proceso").length;
+  const resueltas = incidencias.filter((inc) => inc.estado === "Resuelta").length;
+  const canceladas = incidencias.filter((inc) => inc.estado === "Cancelada").length;
+
+  res.json({ totalIncidencias, pendientes, enProceso, resueltas, canceladas });
 }
 
 // GET /estadisticas
